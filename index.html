@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nexora - Powering What’s Next</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%2300aeef' width='100' height='100' rx='20'/%3E%3Ctext x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='60' fill='white'%3EN%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #1E1E1E;
+      color: #f0f0f0;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #00AEEF, #8A2BE2);
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      transition: background 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgb(0 174 239 / 0.4);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #0087C3, #6F21B5);
+      box-shadow: 0 6px 14px rgb(107 33 181 / 0.6);
+    }
+    a.btn-secondary {
+      background-color: #2d2d2d;
+      color: #a0a0a0;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    a.btn-secondary:hover {
+      background-color: #444444;
+      color: #d0d0d0;
+    }
+    footer {
+      font-size: 0.875rem;
+      color: #888888;
+    }
+    input, textarea, select {
+      background-color: #2e2e2e;
+      color: white;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Hero Section -->
+  <header class="container mx-auto px-6 py-14 text-center">
+    <img src="logo.png" alt="Nexora Logo" class="mx-auto mb-6 w-28">
+
+    <p class="text-2xl text-cyan-400 italic mb-8">Powering What’s Next.</p>
+    <p class="max-w-xl mx-auto mb-12 text-gray-300 text-lg">
+      Nexora builds <strong>LOOPA</strong> — a revolutionary social media app designed to bring people closer, empower authentic connections, and share moments that matter.
+    </p>
+    <div class="flex justify-center gap-6 flex-wrap">
+      <a href="#" class="btn-primary">Download App</a>
+      <a href="#" class="btn-secondary">Use LOOPA in Browser</a>
+    </div>
+  </header>
+
+  <!-- About Section -->
+  <section class="container mx-auto px-6 py-16 max-w-4xl">
+    <h2 class="text-4xl font-semibold mb-6 text-cyan-400">About Nexora</h2>
+    <p class="mb-10 text-gray-300 text-lg">
+      At Nexora, we’re dedicated to crafting the next generation of software solutions that empower users and shape the future.
+    </p>
+    <h2 class="text-4xl font-semibold mb-6 text-cyan-400">About LOOPA</h2>
+    <p class="mb-10 text-gray-300 text-lg">
+      LOOPA is a fresh take on social media — focused on real connections, intuitive sharing, and a safe space to express yourself.
+    </p>
+  </section>
+
+  <!-- Request Form -->
+  <section class="container mx-auto px-6 py-20 max-w-3xl text-center">
+    <h2 class="text-4xl font-semibold mb-6 text-cyan-400">Request Custom Software</h2>
+    <p class="mb-10 text-gray-300 text-lg">Need an app or software for your business? Let’s build it together.</p>
+
+    <form class="bg-gray-800 rounded-xl p-8 space-y-6 shadow-lg">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <input type="text" placeholder="Full Name" class="w-full p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+        <input type="email" placeholder="Email Address" class="w-full p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400" required>
+      </div>
+      <select class="w-full p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400" required>
+        <option value="" disabled selected>Select Business Type</option>
+        <option value="ecommerce">E-Commerce</option>
+        <option value="restaurant">Restaurant</option>
+        <option value="healthcare">Healthcare</option>
+        <option value="education">Education</option>
+        <option value="other">Other</option>
+      </select>
+      <textarea rows="5" placeholder="Tell us what you need..." class="w-full p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" required></textarea>
+      <button type="submit" class="btn-primary justify-center w-full text-center">Send Request</button>
+    </form>
+  </section>
+
+  <!-- Download Section -->
+  <section class="container mx-auto px-6 py-16 text-center">
+    <h2 class="text-4xl font-semibold mb-10 text-cyan-400">Get LOOPA Now</h2>
+    <div class="flex justify-center gap-10 flex-wrap mb-10">
+      <a href="#" class="btn-primary px-8 py-3">App Store</a>
+      <a href="#" class="btn-primary px-8 py-3">Google Play</a>
+    </div>
+    <a href="#" class="btn-secondary px-14 py-3 inline-block">Use LOOPA in Browser</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-center py-8 mt-10">
+    <p>© 2025 Nexora. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
