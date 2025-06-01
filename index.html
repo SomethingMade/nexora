@@ -6,7 +6,6 @@
   <title>Loopa Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
     body {
@@ -82,13 +81,29 @@
       color: #6b7280;
       font-size: 0.875rem;
     }
+    .toggle-header {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .toggle-content {
+      display: none;
+    }
+    .toggle-content.active {
+      display: block;
+    }
+    .loading {
+      color: #6b7280;
+      text-align: center;
+      padding: 1rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <header class="card flex justify-between items-center mb-6">
+    <header class="card mb-6">
       <h1 class="text-2xl font-bold">Loopa Admin Dashboard</h1>
-      <button id="logout-btn" class="btn btn-danger">Log Out</button>
     </header>
 
     <section class="stats-grid">
@@ -111,13 +126,27 @@
     </section>
 
     <section class="card">
-      <h2 class="text-xl font-semibold mb-4">Pending Ads</h2>
-      <div id="pending-ads" class="space-y-4"></div>
+      <div class="toggle-header" data-target="pending-ads">
+        <h2 class="text-xl font-semibold">Pending Ads</h2>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </div>
+      <div id="pending-ads" class="toggle-content">
+        <div class="loading">Loading...</div>
+      </div>
     </section>
 
     <section class="card">
-      <h2 class="text-xl font-semibold mb-4">Approved Ads</h2>
-      <div id="approved-ads" class="space-y-4"></div>
+      <div class="toggle-header" data-target="approved-ads">
+        <h2 class="text-xl font-semibold">Approved Ads</h2>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </div>
+      <div id="approved-ads" class="toggle-content">
+        <div class="loading">Loading...</div>
+      </div>
     </section>
   </div>
 
@@ -133,25 +162,23 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
 
-    auth.onAuthStateChanged(user => {
-      if (!user || user.uid !== 'admin') {
-        console.error('Unauthorized access attempt by UID:', user?.uid);
-        window.location.href = 'index.html';
-        return;
-      }
-      console.log('Admin logged in:', user.uid);
-      loadStats();
-      loadPendingAds();
-      loadApprovedAds();
-    });
+    // Initialize dashboard
+    console.log('Dashboard initialized');
+    loadStats();
+    loadPendingAds();
+    loadApprovedAds();
 
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      auth.signOut().then(() => {
-        window.location.href = 'index.html';
-      }).catch(e => console.error('Logout error:', e));
+    // Toggle sections
+    document.querySelectorAll('.toggle-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const targetId = header.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        content.classList.toggle('active');
+        const svg = header.querySelector('svg');
+        svg.style.transform = content.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+      });
     });
 
     function loadStats() {
@@ -196,7 +223,7 @@
             : Object.entries(ads).map(([adId, ad]) => `
                 <div class="ad-item">
                   <div class="flex justify-between items-center mb-2">
-                    <p class="font-medium">${ad.name}</p>
+                    <p class="font-medium">${ad.name || 'Anonymous'}</p>
                     <span class="text-xs text-gray-500">${new Date(ad.timestamp).toLocaleString()}</span>
                   </div>
                   <p class="text-sm mb-2">${ad.text}</p>
@@ -211,7 +238,7 @@
         });
       } catch (e) {
         console.error('Pending ads error:', e);
-        alert('Failed to load pending ads. Check console.');
+        document.getElementById('pending-ads').innerHTML = '<p class="text-red-500">Error loading ads. Check console.</p>';
       }
     }
 
@@ -222,14 +249,14 @@
           const container = document.getElementById('approved-ads');
           container.innerHTML = Object.entries(ads).length === 0
             ? '<p class="text-gray-500">No approved ads.</p>'
-            : Object.entries(ads).map(([adId, ad]) => {
-                return db.ref(`ad_impressions/${adId}`).once('value').then(snap => {
+            : Promise.all(Object.entries(ads).map(([adId, ad]) =>
+                db.ref(`ad_impressions/${adId}`).once('value').then(snap => {
                   const impressions = snap.val() || 0;
                   const earnings = (impressions * 0.01 * 0.6) / 1000; // $10 CPM, 60% share
                   return `
                     <div class="ad-item">
                       <div class="flex justify-between items-center mb-2">
-                        <p class="font-medium">${ad.name}</p>
+                        <p class="font-medium">${ad.name || 'Anonymous'}</p>
                         <span class="text-xs text-gray-500">${new Date(ad.timestamp).toLocaleString()}</span>
                       </div>
                       <p class="text-sm mb-2">${ad.text}</p>
@@ -240,14 +267,16 @@
                       <button class="btn btn-danger" onclick="updateAdStatus('${adId}', 'rejected')">Remove</button>
                     </div>
                   `;
-                });
-              }).reduce((acc, promise) => acc.then(results => promise.then(result => [...results, result])), Promise.resolve([]))
-              .then(html => container.innerHTML = html.join(''))
-              .catch(e => console.error('Approved ads render error:', e));
+                })
+              )).then(html => container.innerHTML = html.join(''))
+              .catch(e => {
+                console.error('Approved ads render error:', e);
+                container.innerHTML = '<p class="text-red-500">Error loading ads. Check console.</p>';
+              });
         });
       } catch (e) {
         console.error('Approved ads error:', e);
-        alert('Failed to load approved ads. Check console.');
+        document.getElementById('approved-ads').innerHTML = '<p class="text-red-500">Error loading ads. Check console.</p>';
       }
     }
 
@@ -262,6 +291,7 @@
         });
       } catch (e) {
         console.error('Update ad error:', e);
+        alert('Error updating ad. Check console.');
       }
     }
   </script>
