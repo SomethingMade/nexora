@@ -1,299 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Loopa Admin Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <style>
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f3f4f6;
-      color: #1f2937;
-      margin: 0;
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-    .card {
-      background: #fff;
-      border-radius: 0.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .ad-item {
-      border: 1px solid #e5e7eb;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      transition: transform 0.2s;
-    }
-    .ad-item:hover {
-      transform: translateY(-2px);
-    }
-    .btn {
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-primary {
-      background: #2563eb;
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: #1d4ed8;
-    }
-    .btn-danger {
-      background: #dc2626;
-      color: #fff;
-    }
-    .btn-danger:hover {
-      background: #b91c1c;
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    .stat-card {
-      background: #fff;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .stat-card h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .stat-card p {
-      color: #6b7280;
-      font-size: 0.875rem;
-    }
-    .toggle-header {
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .toggle-content {
-      display: none;
-    }
-    .toggle-content.active {
-      display: block;
-    }
-    .loading {
-      color: #6b7280;
-      text-align: center;
-      padding: 1rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Welcome to Dr. M.G Nkuna, your trusted dentist in Mokopane. Learn about our dental services and contact us today.">
+    <meta name="keywords" content="Mokopane dentist, dental care, Dr. M.G Nkuna, dental services">
+    <meta name="author" content="Dr. M.G Nkuna">
+    <title>Dr. M.G Nkuna - Dentist in Mokopane</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #F5F6F5;
+        }
+
+        header {
+            background-color: #4682B4;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #ADD8E6;
+            padding: 1rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #4682B4;
+        }
+
+        .hero {
+            background: url('images/dental-office.jpg') no-repeat center/cover;
+            padding: 4rem 1rem;
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            background-color: #ADD8E6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            background-color: #E6F0FA;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        h1, h2 {
+            color: #4682B4;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .service-item {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #ADD8E6;
+        }
+
+        .contact-info {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ADD8E6;
+        }
+
+        footer {
+            background-color: #4682B4;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        footer a {
+            color: #E6F0FA;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header class="card mb-6">
-      <h1 class="text-2xl font-bold">Loopa Admin Dashboard</h1>
+    <!-- Header -->
+    <header>
+        <h1>Dr. M.G Nkuna</h1>
+        <p>Your Trusted Dentist in Mokopane</p>
     </header>
 
-    <section class="stats-grid">
-      <div class="stat-card">
-        <h3 id="total-users">0</h3>
-        <p>Total Users</p>
-      </div>
-      <div class="stat-card">
-        <h3 id="total-posts">0</h3>
-        <p>Total Posts</p>
-      </div>
-      <div class="stat-card">
-        <h3 id="total-earnings">$0.00</h3>
-        <p>Total Earnings</p>
-      </div>
-      <div class="stat-card">
-        <h3 id="total-ads">0</h3>
-        <p>Approved Ads</p>
-      </div>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>Welcome to Dr. M.G Nkuna</h2>
+        <p>Providing quality dental care with a focus on patient comfort and satisfaction.</p>
     </section>
 
-    <section class="card">
-      <div class="toggle-header" data-target="pending-ads">
-        <h2 class="text-xl font-semibold">Pending Ads</h2>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-        </svg>
-      </div>
-      <div id="pending-ads" class="toggle-content">
-        <div class="loading">Loading...</div>
-      </div>
-    </section>
+    <!-- Main Content -->
+    <div class="container">
+        <!-- About Preview -->
+        <section class="section">
+            <h2>About Us</h2>
+            <p>At Dr. M.G Nkuna, we are dedicated to providing exceptional dental care in Mokopane. Our experienced team, led by Dr. M.G Nkuna, offers personalized treatments to ensure your smile is healthy and beautiful.</p>
+            <a href="about.html">Learn More</a>
+        </section>
 
-    <section class="card">
-      <div class="toggle-header" data-target="approved-ads">
-        <h2 class="text-xl font-semibold">Approved Ads</h2>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-        </svg>
-      </div>
-      <div id="approved-ads" class="toggle-content">
-        <div class="loading">Loading...</div>
-      </div>
-    </section>
-  </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBOyZ3As4GTuNvjemvPF_SpsC6m6vqtNhc",
-      authDomain: "fire-b-a8878.firebaseapp.com",
-      databaseURL: "https://fire-b-a8878.firebaseio.com",
-      projectId: "fire-b-a8878",
-      storageBucket: "fire-b-a8878.appspot.com",
-      messagingSenderId: "658673187627",
-      appId: "1:658673187627:web:6e4c29af661785f0afa36e"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // Initialize dashboard
-    console.log('Dashboard initialized');
-    loadStats();
-    loadPendingAds();
-    loadApprovedAds();
-
-    // Toggle sections
-    document.querySelectorAll('.toggle-header').forEach(header => {
-      header.addEventListener('click', () => {
-        const targetId = header.getAttribute('data-target');
-        const content = document.getElementById(targetId);
-        content.classList.toggle('active');
-        const svg = header.querySelector('svg');
-        svg.style.transform = content.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
-      });
-    });
-
-    function loadStats() {
-      try {
-        // Total Users
-        db.ref('users').on('value', snap => {
-          const users = snap.val() || {};
-          document.getElementById('total-users').textContent = Object.keys(users).length;
-        });
-
-        // Total Posts
-        db.ref('posts').on('value', snap => {
-          const posts = snap.val() || {};
-          document.getElementById('total-posts').textContent = Object.keys(posts).length;
-        });
-
-        // Total Earnings
-        db.ref('earnings').on('value', snap => {
-          const earnings = snap.val() || {};
-          const total = Object.values(earnings).reduce((sum, e) => sum + (e.total || 0), 0);
-          document.getElementById('total-earnings').textContent = `$${total.toFixed(2)}`;
-        });
-
-        // Total Approved Ads
-        db.ref('ads').orderByChild('status').equalTo('approved').on('value', snap => {
-          const ads = snap.val() || {};
-          document.getElementById('total-ads').textContent = Object.keys(ads).length;
-        });
-      } catch (e) {
-        console.error('Stats loading error:', e);
-        alert('Failed to load stats. Check console for details.');
-      }
-    }
-
-    function loadPendingAds() {
-      try {
-        db.ref('ads').orderByChild('status').equalTo('pending').on('value', snap => {
-          const ads = snap.val() || {};
-          const container = document.getElementById('pending-ads');
-          container.innerHTML = Object.entries(ads).length === 0
-            ? '<p class="text-gray-500">No pending ads.</p>'
-            : Object.entries(ads).map(([adId, ad]) => `
-                <div class="ad-item">
-                  <div class="flex justify-between items-center mb-2">
-                    <p class="font-medium">${ad.name || 'Anonymous'}</p>
-                    <span class="text-xs text-gray-500">${new Date(ad.timestamp).toLocaleString()}</span>
-                  </div>
-                  <p class="text-sm mb-2">${ad.text}</p>
-                  ${ad.imageUrl ? `<img src="${ad.imageUrl}" class="w-full max-w-xs rounded mb-2" alt="Ad image"/>` : ''}
-                  <p class="text-sm mb-2"><a href="${ad.link}" target="_blank" class="text-blue-500 hover:underline">${ad.link}</a></p>
-                  <div class="flex gap-2">
-                    <button class="btn btn-primary" onclick="updateAdStatus('${adId}', 'approved')">Approve</button>
-                    <button class="btn btn-danger" onclick="updateAdStatus('${adId}', 'rejected')">Reject</button>
-                  </div>
+        <!-- Services Preview -->
+        <section class="section">
+            <h2>Our Services</h2>
+            <div class="services-grid">
+                <div class="service-item">
+                    <h3>General Dentistry</h3>
+                    <p>Routine cleanings, exams, and fillings to maintain oral health.</p>
                 </div>
-              `).join('');
-        });
-      } catch (e) {
-        console.error('Pending ads error:', e);
-        document.getElementById('pending-ads').innerHTML = '<p class="text-red-500">Error loading ads. Check console.</p>';
-      }
-    }
+                <div class="service-item">
+                    <h3>Cosmetic Dentistry</h3>
+                    <p>Teeth whitening, veneers, and more to enhance your smile.</p>
+                </div>
+                <div class="service-item">
+                    <h3>Orthodontics</h3>
+                    <p>Braces and aligners for straighter teeth and proper alignment.</p>
+                </div>
+            </div>
+            <a href="services.html">View All Services</a>
+        </section>
 
-    function loadApprovedAds() {
-      try {
-        db.ref('ads').orderByChild('status').equalTo('approved').on('value', snap => {
-          const ads = snap.val() || {};
-          const container = document.getElementById('approved-ads');
-          container.innerHTML = Object.entries(ads).length === 0
-            ? '<p class="text-gray-500">No approved ads.</p>'
-            : Promise.all(Object.entries(ads).map(([adId, ad]) =>
-                db.ref(`ad_impressions/${adId}`).once('value').then(snap => {
-                  const impressions = snap.val() || 0;
-                  const earnings = (impressions * 0.01 * 0.6) / 1000; // $10 CPM, 60% share
-                  return `
-                    <div class="ad-item">
-                      <div class="flex justify-between items-center mb-2">
-                        <p class="font-medium">${ad.name || 'Anonymous'}</p>
-                        <span class="text-xs text-gray-500">${new Date(ad.timestamp).toLocaleString()}</span>
-                      </div>
-                      <p class="text-sm mb-2">${ad.text}</p>
-                      ${ad.imageUrl ? `<img src="${ad.imageUrl}" class="w-full max-w-xs rounded mb-2" alt="Ad image"/>` : ''}
-                      <p class="text-sm mb-2"><a href="${ad.link}" target="_blank" class="text-blue-500 hover:underline">${ad.link}</a></p>
-                      <p class="text-sm mb-2">Impressions: ${impressions}</p>
-                      <p class="text-sm mb-2">Creator Earnings: $${earnings.toFixed(4)}</p>
-                      <button class="btn btn-danger" onclick="updateAdStatus('${adId}', 'rejected')">Remove</button>
-                    </div>
-                  `;
-                })
-              )).then(html => container.innerHTML = html.join(''))
-              .catch(e => {
-                console.error('Approved ads render error:', e);
-                container.innerHTML = '<p class="text-red-500">Error loading ads. Check console.</p>';
-              });
-        });
-      } catch (e) {
-        console.error('Approved ads error:', e);
-        document.getElementById('approved-ads').innerHTML = '<p class="text-red-500">Error loading ads. Check console.</p>';
-      }
-    }
+        <!-- Contact Preview -->
+        <section class="section">
+            <h2>Contact Us</h2>
+            <div class="contact-info">
+                <p><strong>Address:</strong> No. 56 Thabo Mbeki Street, Shop No. 1, Mokopane, 0600, Leseding Medical Centre</p>
+                <p><strong>Cell:</strong> 082 654 7040</p>
+                <p><strong>Tel:</strong> (015) 491 1122</p>
+                <p><strong>Fax:</strong> 086 218 2251</p>
+                <p><strong>Emergency:</strong> 082 662 3646</p>
+                <p><strong>Email:</strong> gavazabaloyi1@gmail.com</p>
+                <p><strong>Hours:</strong> Mon-Fri: 9 AM - 5 PM, Sat: 9 AM - 1 PM</p>
+            </div>
+            <a href="contact.html">Get in Touch</a>
+        </section>
+    </div>
 
-    function updateAdStatus(adId, status) {
-      try {
-        db.ref(`ads/${adId}`).update({ status }).then(() => {
-          console.log(`Ad ${adId} updated to ${status}`);
-          alert(`Ad ${status} successfully.`);
-        }).catch(e => {
-          console.error(`Update ad ${adId} error:`, e);
-          alert('Failed to update ad. Check console.');
-        });
-      } catch (e) {
-        console.error('Update ad error:', e);
-        alert('Error updating ad. Check console.');
-      }
-    }
-  </script>
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Dr. M.G Nkuna. All rights reserved. | <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
 </body>
 </html>
