@@ -36,10 +36,20 @@ button:disabled{opacity:.5;cursor:default}
 .hp{position:absolute;left:-9999px;height:0;overflow:hidden}
 #msg{text-align:center;margin-top:14px;color:var(--mute);min-height:1.4em}
 #done{display:none;text-align:center;padding-top:12vh}
-@media(prefers-reduced-motion:reduce){#bar{transition:none}}
+.q-hidden,.send-hidden{display:none}
+fieldset.reveal{animation:rise .3s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.next{width:auto;padding:11px 26px;margin-top:6px;background:transparent;color:var(--ink);border:1px solid var(--ink)}
+#splash{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .35s}
+#splash.out{opacity:0;pointer-events:none}
+.spin{width:46px;height:46px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--ink);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#splash p{margin:0;color:var(--mute);font-size:.9rem}
+@media(prefers-reduced-motion:reduce){#bar,#splash{transition:none}fieldset.reveal{animation:none}.spin{animation-duration:2s}}
 </style>
 </head>
 <body>
+<div id="splash" role="status" aria-live="polite"><div class="spin"></div><p>Loading survey</p></div>
 <div id="bar"></div>
 <main>
   <form id="form" novalidate>
@@ -47,7 +57,7 @@ button:disabled{opacity:.5;cursor:default}
     <p class="intro" id="intro"></p>
     <div id="qs"></div>
     <div class="hp" aria-hidden="true"><input type="text" id="hp" tabindex="-1" autocomplete="off"></div>
-    <button type="submit" id="send" disabled>Send answers</button>
+    <button type="submit" id="send" class="send-hidden" disabled>Send answers</button>
     <div id="msg" role="status"></div>
   </form>
   <section id="done">
@@ -116,7 +126,7 @@ function render() {
   document.title = survey.title;
   $('title').textContent = survey.title;
   $('intro').textContent = survey.description || '';
-  $('qs').innerHTML = survey.questions.map(q => {
+  $('qs').innerHTML = survey.questions.map((q, i) => {
     const req = q.required ? '<span class="req">Required</span>' : '<span class="req">Optional</span>';
     let body = '';
     if (q.type === 'rating') {
@@ -130,7 +140,8 @@ function render() {
     } else {
       body = `<textarea name="${q.id}" maxlength="1000"></textarea>`;
     }
-    return `<fieldset data-q="${q.id}"><legend>${esc(q.text)}${req}</legend>${body}<div class="err">Please answer this question.</div></fieldset>`;
+    const next = (q.type === 'multi' || q.type === 'text') ? '<button type="button" class="next">Skip</button>' : '';
+    return `<fieldset data-q="${q.id}" data-type="${q.type}" class="${i ? 'q-hidden' : ''}"><legend>${esc(q.text)}${req}</legend>${body}<div class="err">Please answer this question.</div>${next}</fieldset>`;
   }).join('');
 }
 
@@ -160,12 +171,44 @@ function validate(answers) {
   return !first;
 }
 
+function advance(fs) {
+  const all = [...document.querySelectorAll('#qs fieldset')];
+  const next = all[all.indexOf(fs) + 1];
+  if (next) {
+    if (!next.classList.contains('q-hidden')) return;
+    next.classList.remove('q-hidden');
+    next.classList.add('reveal');
+    next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else if ($('send').classList.contains('send-hidden')) {
+    $('send').classList.remove('send-hidden');
+    $('send').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+$('qs').addEventListener('change', e => {
+  const fs = e.target.closest('fieldset');
+  if (fs && (fs.dataset.type === 'rating' || fs.dataset.type === 'choice')) {
+    fs.classList.remove('bad');
+    advance(fs);
+  }
+});
+$('qs').addEventListener('click', e => {
+  const b = e.target.closest('.next');
+  if (b) advance(b.closest('fieldset'));
+});
+$('qs').addEventListener('input', e => {
+  const fs = e.target.closest('fieldset');
+  const b = fs && fs.querySelector('.next');
+  if (b) b.textContent = (fs.querySelector('input:checked') || fs.querySelector('textarea')?.value.trim()) ? 'Continue' : 'Skip';
+});
+
 function progress() {
   const a = collect();
   $('bar').style.width = (Object.keys(a).length / survey.questions.length * 100) + '%';
 }
 
 async function load() {
+  const t0 = Date.now();
   try { await firebase.auth().signInAnonymously(); } catch (e) { /* fine if rules allow unauthenticated writes */ }
   try {
     const snap = await db.ref(`${NODE.defs}/${SURVEY_ID}`).get();
@@ -176,11 +219,19 @@ async function load() {
     }
   } catch (e) { /* use the built-in survey */ }
   render();
-  if (localStorage.getItem('survey_done_' + SURVEY_ID)) {
-    $('msg').textContent = 'You have already answered this survey on this device.';
+  let done = false;
+  try { done = !!localStorage.getItem('survey_done_' + SURVEY_ID); } catch (_) {}
+  if (done) {
+    $('form').style.display = 'none';
+    $('done').querySelector('h1').textContent = 'Already answered';
+    $('done').querySelector('p').textContent = 'You have already completed this survey on this device.';
+    $('done').style.display = 'block';
   } else {
     $('send').disabled = false;
   }
+  await new Promise(r => setTimeout(r, Math.max(0, 700 - (Date.now() - t0))));
+  $('splash').classList.add('out');
+  setTimeout(() => $('splash').remove(), 400);
 }
 
 $('form').addEventListener('input', progress);
