@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Survey</title>
+<title>Climate and mining in Mogalakwena</title>
 <style>
 :root{--bg:#fff;--ink:#111;--mute:#6b6b70;--line:#dcdce0;--soft:#f3f3f5;--err:#c62828;color-scheme:light dark}
 @media(prefers-color-scheme:dark){:root{--bg:#0a0a0d;--ink:#f5f5f7;--mute:#9a9aa2;--line:#2a2a30;--soft:#17171b;--err:#ef6b6b}}
@@ -77,16 +77,31 @@ const firebaseConfig = {
    survey_stats/{surveyId}/count           running total                                        */
 const NODE = { defs: 'surveys', responses: 'survey_responses', stats: 'survey_stats' };
 
-const SURVEY_ID = new URLSearchParams(location.search).get('s') || 'general';
+const SURVEY_ID = new URLSearchParams(location.search).get('s') || 'mogalakwena-climate';
 
 const DEFAULT_SURVEY = {
-  title: 'Tell us what you think',
-  description: 'Takes about two minutes. Your answers help us improve.',
+  title: 'Climate and mining in Mogalakwena',
+  description: 'Tell us what you have noticed about heat, rain, water and dust where you live, and how you think mining is involved. These are your own observations, and there are no right or wrong answers. Takes about three minutes.',
   questions: [
-    { id: 'q1', type: 'rating', text: 'How easy was the app to use?', required: true, low: 'Hard', high: 'Easy' },
-    { id: 'q2', type: 'choice', text: 'How often do you use it?', required: true, options: ['Daily', 'Weekly', 'Monthly', 'Rarely'] },
-    { id: 'q3', type: 'multi', text: 'Which features do you use?', options: ['Chats', 'Feed', 'Live', 'Voice calls', 'Rides'] },
-    { id: 'q4', type: 'text', text: 'What should we improve first?' }
+    { id: 'q1', type: 'choice', text: 'Where do you live?', required: true,
+      options: ['Next to a mine (within 5 km)', 'Mokopane town', 'Rural village in Mogalakwena', 'Farm', 'Elsewhere in Limpopo'] },
+    { id: 'q2', type: 'choice', text: 'How long have you lived in the area?', required: true,
+      options: ['Less than 5 years', '5 to 15 years', '16 to 30 years', 'More than 30 years'] },
+    { id: 'q3', type: 'rating', text: 'Has it become hotter over the years you have lived here?', required: true, low: 'Not at all', high: 'Much hotter' },
+    { id: 'q4', type: 'choice', text: 'How has the rain changed?', required: true,
+      options: ['Less rain', 'More unpredictable', 'About the same', 'More rain', 'Not sure'] },
+    { id: 'q5', type: 'multi', text: 'Which changes have you noticed near you?',
+      options: ['More dust', 'Poorer air quality', 'Water shortages', 'Drier land or failing crops', 'Livestock affected', 'Noise or blasting vibrations', 'More heat in summer'] },
+    { id: 'q6', type: 'rating', text: 'How much do you think mining activity contributes to these changes?', required: true, low: 'Not at all', high: 'A great deal' },
+    { id: 'q7', type: 'multi', text: 'What else do you think contributes?',
+      options: ['Coal-fired electricity (Eskom)', 'Farming', 'Veld fires or burning waste', 'Cutting wood for fuel', 'Vehicles and transport', 'Global climate change', 'Not sure'] },
+    { id: 'q8', type: 'choice', text: 'Has your access to water changed in the last 10 years?',
+      options: ['Much worse', 'A little worse', 'No change', 'Better'] },
+    { id: 'q9', type: 'choice', text: 'Does anyone in your household work for, or earn income linked to, a mine?',
+      options: ['Yes', 'No', 'Prefer not to say'] },
+    { id: 'q10', type: 'multi', text: 'What should mines do more of?',
+      options: ['Reduce dust', 'Use renewable energy', 'Share air and water data with the community', 'Rehabilitate mined land', 'Support local water supply', 'Let communities help monitor impacts'] },
+    { id: 'q11', type: 'text', text: 'Anything else you want to tell us?' }
   ]
 };
 
